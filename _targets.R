@@ -11,12 +11,21 @@ library(targets)
 # if you keep your functions in external scripts.
 source("R/get_files.R")
 
-# Set target-specific options such as packages.
-tar_option_set(packages = "dplyr")
+options(tigris_use_cache = TRUE)
 
+# Set target-specific options such as packages.
+tar_option_set(packages = c("tidyverse", "tigris"))
+
+pumas <- "4953001"
 gtfs_url <- "http://www.fivecounty.utah.gov/transit/google_transit.zip"
+geofabrik_url <- "https://download.geofabrik.de/north-america/us/utah-220426.osm.pbf"
 
 # End this file with a list of target objects.
 list(
-  tar_target(gtfs, get_gtfs(gtfs_url), format = "file")
+
+  # Compile the r5 folder
+  tar_target(bounding_box, get_bb(pumas)),
+  tar_target(gtfs, get_gtfs(gtfs_url), format = "file"),
+  tar_target(rawpbf, get_osmpbf(geofabrik_url, bounding_box), format = "file")
+
 )
