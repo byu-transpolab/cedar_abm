@@ -84,3 +84,22 @@ get_bb <- function(pumas){
     # get the bounding box
     sf::st_bbox(pumas_sf)
 }
+
+
+#' Get block groups in region
+#'
+#' @param pumas
+#' @return
+get_bg <- function(pumas){
+  # find list of states in the pumas supplied
+  states <- unique(substr(pumas, 1, 2))
+
+  # get the shape of all pumas
+  psf <- tigris::pumas(state = states, year = 2020) %>%
+    dplyr::filter(GEOID10 %in% pumas)
+
+
+  # get the block groups in the state
+  bg <- tigris::block_groups(state = states)  %>%
+    sf::st_filter(psf)
+}
