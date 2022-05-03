@@ -17,6 +17,37 @@ get_gtfs <- function(url){
 
 
 
+#' Get PUMS
+#'
+#' @param pumas List of PUMAS for model
+#' @param
+#'
+#'
+get_pums <- function(pumas, hp = c("h", "p")){
+
+  # get the states we need to pull pumas for
+  st_fips <- unique(substr(pumas, 1, 2))
+  st_abbr <- tidycensus::fips_codes |> filter(state_code %in% st_fips) |>
+    pull(state) |> tolower() |> unique()
+
+  ret <- lapply(st_abbr, function(st){
+    for(i in hp){
+      url <- str_c(
+        "https://www2.census.gov/programs-surveys/acs/data/pums/2019/5-Year/csv_",
+        i, st, ".zip", sep = "")
+
+      file <- str_c(i, st, "_pums.csv.zip")
+      if(!dir.exists("data/pums")) dir.create("data/pums", recursive = TRUE)
+      download.file(url, destfile = file.path("data/pums", file))
+    }
+
+  })
+
+  return(file.path("data/pums", str_c(hp[1], st_abbr[1], "_pums.csv.zip")))
+
+}
+
+
 #' Get the OSM PBF file
 #'
 #' @param url URL to the Geofabrik.de osm pbf planet file
@@ -78,8 +109,9 @@ get_bb <- function(pumas){
   # find list of states in the pumas supplied
   states <- unique(substr(pumas, 1, 2))
 
+
   # get the shape of all pumas
-  tigris::pumas(state = states, year = 2020) %>%
+  tigris::pumas(state = states, year = 2019) %>%
     dplyr::filter(GEOID10 %in% pumas) %>%
     # get the bounding box
     sf::st_bbox(pumas_sf)
@@ -94,12 +126,14 @@ get_bg <- function(pumas){
   # find list of states in the pumas supplied
   states <- unique(substr(pumas, 1, 2))
 
-  # get the shape of all pumas
-  psf <- tigris::pumas(state = states, year = 2020) %>%
-    dplyr::filter(GEOID10 %in% pumas)
+  # puma relationship
+  pumatr <- read_csv("https://www2.census.gov/geo/docs/maps-data/data/rel/2010_Census_Tract_to_2010_PUMA.txt") |>
+    mutate(PUMA = str_c(STATEFP, PUMA5CE)) |>
+    filter(PUMA %in% pumas)
+
 
 
   # get the block groups in the state
-  bg <- tigris::block_groups(state = states)  %>%
-    sf::st_filter(psf)
+  bg <- tigris::block_groups(state = states, year = 2019)  |>
+    filter(COUNTYFP %in% pumatr$COUNTYFP)
 }

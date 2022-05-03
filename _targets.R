@@ -38,8 +38,13 @@ periods <- c(
 # End this file with a list of target objects.
 list(
 
-  # Compile the r5 folder
+  ## Geographic boundaries based on pumas attribute ============
   tar_target(bounding_box, get_bb(pumas)),
+  tar_target(tracts, unique(substr(bg$GEOID, 1, 11))),
+  tar_target(counties, unique(substr(tracts, 1, 5))),
+
+  ## Skims =====================================================
+  # Compile the r5 folder
   tar_target(gtfs, get_gtfs(gtfs_url), format = "file"),
   tar_target(rawpbf, get_osmpbf(geofabrik_url, bounding_box), format = "file"),
   tar_target(r5dir, dirname(c(rawpbf, gtfs))),
