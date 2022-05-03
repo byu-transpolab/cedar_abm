@@ -135,5 +135,6 @@ get_bg <- function(pumas){
 
   # get the block groups in the state
   bg <- tigris::block_groups(state = states, year = 2019)  |>
-    filter(COUNTYFP %in% pumatr$COUNTYFP)
+    filter(COUNTYFP %in% pumatr$COUNTYFP) |>
+    left_join(pumatr |> select(PUMA, STATEFP, TRACTCE), by = c("STATEFP", "TRACTCE"))
 }

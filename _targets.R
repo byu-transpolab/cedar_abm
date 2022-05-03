@@ -64,9 +64,8 @@ list(
 
 
   ## Synthetic Population =======================================
-  # The only block-level control we get is the number of households in each
-  # block
-  # tar_target(bk_control, get_bk_control(se, crosswalk)),
+  # the only blockgroup-level control is the number of households in the BG
+  tar_target(bg_control, get_nhh_controls(acsvars, counties)),
 
   # tract controls include most demographic attributes:
   # The attributes available from the ACS include the following:
@@ -82,13 +81,15 @@ list(
   tar_target(meta, get_meta(tract_controls)),
 
 
-
   #' Seed files
   #' this function gets the relevant pums for all the pumas described,
   #' but only returns the first one in targets
   tar_target(pp_seed_file, get_pums(pumas, c("h", "p")), format = "file"),
-  tar_target(seed, make_seed(pp_seed_file, pumas))
-
+  tar_target(seed, make_seed(pp_seed_file, pumas)),
+  tar_target(popsim_ready, write_popsim(meta, tract_controls, bg_control, bg, seed,
+                                        path = "data/popsim")),
+  tar_target(popsim_success, run_populationsim(popsim_ready, "data/popsim", popsim_outputs),
+             format = "file")
 
 
 )

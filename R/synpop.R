@@ -1,3 +1,57 @@
+#' Run populationsim
+#'
+run_populationsim <- function(write_result, data_path, out_path){
+
+  out <- system2("sh/runpopsim.sh")
+  if(out != 0){
+    stop("Error running popsim")
+  } else {
+    p_file <- file.path(out_path, "synthetic_persons.csv")
+    return(p_file)
+  }
+
+}
+
+#' Write out populationsim files
+#'
+#'
+#' @param meta
+#' @param tract_controls
+#' @param bg_control
+#' @param bg
+#' @param seed
+#' @param path Path to output folder
+#'
+write_popsim <- function(meta, tract_controls, bg_control, bg, seed, path){
+  dir.create(path, showWarnings = FALSE, recursive = TRUE)
+
+  # Controls
+  write_csv(meta, file.path(path, "control_totals_meta.csv"))
+  write_csv(tract_controls, file.path(path, "control_totals_tract.csv"))
+  write_csv(bg_control |> rename(BLOCKGROUP = GEOID), file.path(path, "control_totals_bg.csv"))
+
+  # Seed
+  write_csv(seed$households, file.path(path, "seed_households.csv"))
+  write_csv(seed$persons, file.path(path, "seed_persons.csv"))
+
+  # Crosswalk
+  bg |>
+    transmute(
+      BLOCKGROUP = GEOID,
+      TRACT = substr(GEOID, 1, 11),
+      PUMA,
+      REGION = 1
+    ) |>
+    write_csv(file.path(path, "crosswalk.csv"))
+
+  return(TRUE)
+}
+
+
+#' Make geographic crosswalk file
+#'
+
+
 #' Make seed tables from input data
 #'
 #' @param pp_seed_file path to a persons seed file
@@ -53,6 +107,17 @@ make_seed <- function(pp_seed_file, pumas){
   list("persons" = seed_per, "households" = seed_hh)
 }
 
+
+get_nhh_controls <- function(acsvars, mycounties){
+
+  raw_hh <- get_acs("block group", variables = "B25001_001",
+          state = substr(mycounties, 1, 2),
+          county = substr(mycounties, 3, 5), year = 2019)
+
+  raw_hh |>
+    select(GEOID, numhh = estimate)
+
+}
 
 #' A function to replace NA values with non-missing stupid numbers
 #'

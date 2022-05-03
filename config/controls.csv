@@ -1,0 +1,20 @@
+target,geography,seed_table,importance,control_field,expression
+num_hh,BLOCKGROUP,households,10000,numhh,(households.WGTP > 0) & (households.WGTP < np.inf)
+hh_size_1,TRACT,households,10000,HHSIZE1,households.NP == 1
+hh_size_2,TRACT,households,10000,HHSIZE2,households.NP == 2
+hh_size_3,TRACT,households,10000,HHSIZE3,households.NP == 3
+hh_size_4_plus,TRACT,households,10000,HHSIZE4,households.NP >= 4
+p_age_0_14,TRACT,persons,10000,PAGE0,(persons.AGEP >=0) & (persons.AGEP <= 15)
+p_age_15_24,TRACT,persons,10000,PAGE1,(persons.AGEP > 15) & (persons.AGEP <= 24)
+p_age_25_54,TRACT,persons,10000,PAGE2,(persons.AGEP > 24) & (persons.AGEP <= 54)
+p_age_55_64,TRACT,persons,10000,PAGE3,(persons.AGEP > 54) & (persons.AGEP <= 64)
+p_age_65_plus,TRACT,persons,10000,PAGE4,(persons.AGEP> 64) & (persons.AGEP <= np.inf)
+hh_inc_15,TRACT,households,500,HHINC1,(households.HHINCADJ > 0) & (households.HHINCADJ <= 21297)
+hh_inc_15_30,TRACT,households,500,HHINC2,(households.HHINCADJ >21297) & (households.HHINCADJ <= 42593)
+hh_inc_30_60,TRACT,households,500,HHINC3,(households.HHINCADJ > 42593) & (households.HHINCADJ <= 85185)
+hh_inc_60_plus,TRACT,households,500,HHINC4,(households.HHINCADJ > 85185) & (households.HHINCADJ <= 999999999)
+hh_wrks_0,TRACT,households,1000,HHWORK0,households.WIF == 0
+hh_wrks_1,TRACT,households,1000,HHWORK1,households.WIF == 1
+hh_wrks_2,TRACT,households,1000,HHWORK2,households.WIF == 2
+hh_wrks_3_plus,TRACT,households,1000,HHWORK3,households.WIF >= 3
+pop,REGION,persons,50000,totalPOP,(persons.AGEP >=0) & (persons.AGEP <= 150)
