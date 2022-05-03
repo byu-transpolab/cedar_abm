@@ -11,6 +11,19 @@ town. This includes the following:
   - A set of skims created by `r5r` representing transit, bike, drive, and walk skims
   - Basic choice model coefficients estimated from the national household travel survey
   
+## Targets
+The datasets are built using the
+[`targets`](https://books.ropensci.org/targets/) library for R. To run the
+entire build process, run the following command in your R session:
+
+```r
+library(targets)
+tar_make()
+```
+
+The `make` process is controlled with the `_targets.R` script. This includes 
+parameters for building the input files for a particular region, using particular 
+periods.
   
 ## Environment
 
