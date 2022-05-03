@@ -41,6 +41,8 @@ list(
 
   ## Geographic boundaries based on pumas attribute ============
   tar_target(bounding_box, get_bb(pumas)),
+  tar_target(bg, get_bg(pumas)),
+  tar_target(bg_from_0, renumber_bg(bg)),
   tar_target(tracts, unique(substr(bg$GEOID, 1, 11))),
   tar_target(counties, unique(substr(tracts, 1, 5))),
 
@@ -50,9 +52,6 @@ list(
   tar_target(rawpbf, get_osmpbf(geofabrik_url, bounding_box), format = "file"),
   tar_target(r5dir, dirname(c(rawpbf, gtfs))),
 
-
-  tar_target(bg, get_bg(pumas)),
-  tar_target(bg_from_0, renumber_bg(bg)),
 
 
   # calculate initial skims
